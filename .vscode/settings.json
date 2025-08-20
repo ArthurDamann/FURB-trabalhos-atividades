@@ -1,10 +1,7 @@
 {
     "java.project.sourcePaths": [
         ".",
-        "AtividadesJava",
         "AtividadesJava\\src",
-        "TrabalhosJava\\TrabalhoHTML",
-        "TrabalhosJava",
         "TrabalhosJava\\TrabalhoHTML\\src"
     ],
     "java.project.referencedLibraries": []
