@@ -124,6 +124,7 @@ public class MapaDispersao<T> {
 
     public void redimensionar() {
         int novoTamanho = info.length * 2;
+        @SuppressWarnings("unchecked")
         ListaEncadeada<NoMapa<T>>[] novoInfo = new ListaEncadeada[novoTamanho];
 
         for (int i = 0; i < info.length; i++) {
@@ -159,6 +160,7 @@ public class MapaDispersao<T> {
             return; // Não precisa redimensionar
         }
 
+        @SuppressWarnings("unchecked")
         ListaEncadeada<NoMapa<T>>[] novoInfo = new ListaEncadeada[novoTamanho];
 
         for (int i = 0; i < info.length; i++) {
