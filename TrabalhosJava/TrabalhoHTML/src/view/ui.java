@@ -83,7 +83,7 @@ public class ui extends javax.swing.JFrame {
                 new String[] {
                         "Tag", "Ocorrências"
                 }));
-
+        
         jScrollPane2.setViewportView(jTable1);
 
         jButton2.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
