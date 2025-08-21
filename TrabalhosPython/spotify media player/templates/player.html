@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Player Spotify - Visualização</title>
+  <style>
+    /* Reset e base */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+    }
+
+    /* Container principal flexível para desktop e mobile */
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      justify-content: center;
+      max-width: 1000px;
+      width: 100%;
+    }
+
+    /* Player */
+    .player-container {
+      background: #222;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      width: 350px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background 0.3s ease;
+    }
+
+    .player-container:hover {
+      background: #1db954;
+      box-shadow: 0 8px 30px #1db954cc;
+    }
+
+    .cover img {
+      width: 100%;
+      height: 350px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+      user-select: none;
+      pointer-events: none;
+    }
+
+    /* Controles */
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 20px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .controls button {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 1rem;
+      padding: 12px 0;
+      border-radius: 30px;
+      border: none;
+      background-color: #1db954;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+
+    .controls button:hover {
+      background-color: #14833b;
+    }
+
+    .controls button svg {
+      stroke: white;
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Info da faixa */
+    #track-info {
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 0 10px;
+      width: 100%;
+      min-width: 280px;
+    }
+
+    #track-info h2,
+    #track-info h3,
+    #track-info h4,
+    #track-info h5 {
+      margin: 0;
+      font-weight: 600;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+    }
+
+    #track-info h2 {
+      font-size: 1.8rem;
+      color: #1db954;
+    }
+
+    #track-info h3 {
+      font-size: 1.3rem;
+      color: #ccc;
+    }
+
+    #track-info h4 {
+      font-size: 1.1rem;
+      color: #aaa;
+      font-style: italic;
+    }
+
+    #track-info h5 {
+      font-size: 0.9rem;
+      color: #888;
+      margin-top: 10px;
+    }
+
+    /* Player de áudio */
+    #audio-preview {
+      width: 100%;
+      margin-top: 15px;
+      border-radius: 8px;
+      outline: none;
+      background: #111;
+      box-shadow: 0 0 8px #1db954;
+    }
+
+    /* Menu de playlists */
+    #playlist-menu {
+      max-width: 350px;
+      width: 100%;
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    #playlist-menu h3 {
+      margin: 0 0 5px 0;
+      font-weight: 600;
+      color: #1db954;
+      text-align: center;
+    }
+
+    #playlist-select {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 30px;
+      border: none;
+      background: #333;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: inset 0 0 8px #0008;
+      user-select: none;
+    }
+
+    #playlist-select:hover,
+    #playlist-select:focus {
+      background-color: #1db954;
+      color: #111;
+      outline: none;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .player-container,
+      #track-info,
+      #playlist-menu {
+        max-width: 100%;
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Player Spotify - Visualização de Dados</h1>
+
+  <div class="container">
+    <div class="player-container">
+      <div class="cover" id="cover">
+        <img id="album-cover" src="https://via.placeholder.com/350" alt="Capa do álbum" />
+      </div>
+      <div class="controls">
+        <button id="prev" aria-label="Faixa Anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Anterior
+        </button>
+
+        <button id="next" aria-label="Próxima Faixa">
+          Próxima
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="track-info">
+      <h2 id="track-name">Nome da música</h2>
+      <h3 id="artist-name">Artista</h3>
+      <h4 id="album-name">Álbum</h4>
+      <h5 id="description">Descrição: Visualização de dados do Spotify</h5>
+
+      <!-- Player fixo para o preview do Deezer -->
+      <audio id="audio-preview" controls autoplay>
+        <source id="audio-source" src="" type="audio/mpeg" />
+        Seu navegador não suporta áudio.
+      </audio>
+    </div>
+
+    <div id="playlist-menu">
+      <h3>Selecione uma Playlist</h3>
+      <select id="playlist-select" aria-label="Seleção de playlist">
+        <option value="">Carregando playlists...</option>
+      </select>
+    </div>
+  </div>
+
+  <script>
+    let playlists = [];
+    let tracks = [];
+    let currentTrackIndex = 0;
+
+    const playlistSelect = document.getElementById('playlist-select');
+    const albumCover = document.getElementById('album-cover');
+    const trackName = document.getElementById('track-name');
+    const artistName = document.getElementById('artist-name');
+    const albumName = document.getElementById('album-name');
+    const btnPrev = document.getElementById('prev');
+    const btnNext = document.getElementById('next');
+    const description = document.getElementById('description');
+
+    async function getAccessToken() {
+      const res = await fetch('/token');
+      if (!res.ok) {
+        alert('Você precisa fazer login primeiro!');
+        window.location.href = '/';
+        return null;
+      }
+      const data = await res.json();
+      return data.access_token;
+    }
+
+    async function fetchPlaylists(token) {
+      const res = await fetch('https://api.spotify.com/v1/me/playlists?limit=50', {
+        headers: { Authorization: 'Bearer ' + token }
+      });
+      if (!res.ok) {
+        alert('Erro ao carregar playlists');
+        return;
+      }
+      const data = await res.json();
+      playlists = data.items;
+      populatePlaylistSelect();
+    }
+
+    function populatePlaylistSelect() {
+      playlistSelect.innerHTML = '';
+      if (playlists.length === 0) {
+        playlistSelect.innerHTML = '<option value="">Nenhuma playlist encontrada</option>';
+        return;
+      }
+      playlists.forEach(pl => {
+        const option = document.createElement('option');
+        option.value = pl.id;
+        option.textContent = pl.name;
+        playlistSelect.appendChild(option);
+      });
+      playlistSelect.selectedIndex = 0;
+      loadPlaylistTracks(playlistSelect.value);
+    }
+
+    async function loadPlaylistTracks(playlistId) {
+      if (!playlistId) return;
+      const token = await getAccessToken();
+      if (!token) return;
+
+      const res = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=100`, {
+        headers: { Authorization: 'Bearer ' + token }
+      });
+      if (!res.ok) {
+        alert('Erro ao carregar faixas');
+        return;
+      }
+      const data = await res.json();
+      tracks = data.items
+        .map(item => item.track)
+        .filter(track => track != null);
+      currentTrackIndex = 0;
+      if (tracks.length > 0) {
+        showTrack(tracks[currentTrackIndex]);
+      } else {
+        clearTrackInfo();
+        alert('Playlist vazia');
+      }
+    }
+
+    async function showTrack(track) {
+      trackName.textContent = track.name;
+      artistName.textContent = track.artists.map(a => a.name).join(', ');
+      albumName.textContent = track.album.name;
+      albumCover.src = track.album.images.length > 0 ? track.album.images[0].url : 'https://via.placeholder.com/350';
+
+      try {
+        const response = await fetch('/describe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0]?.name || '',
+            album: track.album.name
+          })
+        });
+
+        if (!response.ok) {
+          description.textContent = "Descrição: Não foi possível gerar descrição.";
+          audioPreview.src = ""; // limpa áudio se erro
+          return;
+        }
+
+        const data = await response.json();
+        description.textContent = "Descrição: " + data.description;
+
+        const audioPreview = document.getElementById("audio-preview");
+        const audioSource = document.getElementById("audio-source");
+
+        if (data.preview) {
+          audioSource.src = data.preview;
+          audioPreview.load();
+          audioPreview.play();
+        } else {
+          audioSource.src = "";
+          audioPreview.pause();
+        }
+      } catch (error) {
+        console.error("Erro no fetch /describe:", error);
+        description.textContent = "Descrição: Erro na requisição.";
+      }
+    }
+
+    function clearTrackInfo() {
+      trackName.textContent = 'Nenhuma música';
+      artistName.textContent = '';
+      albumName.textContent = '';
+      albumCover.src = 'https://via.placeholder.com/350';
+      description.textContent = "Descrição: Nenhuma";
+    }
+
+    function prevTrack() {
+      if (tracks.length === 0) return;
+      currentTrackIndex--;
+      if (currentTrackIndex < 0) currentTrackIndex = tracks.length - 1;
+      showTrack(tracks[currentTrackIndex]);
+    }
+
+    function nextTrack() {
+      if (tracks.length === 0) return;
+      currentTrackIndex++;
+      if (currentTrackIndex >= tracks.length) currentTrackIndex = 0;
+      showTrack(tracks[currentTrackIndex]);
+    }
+
+    playlistSelect.addEventListener('change', () => {
+      loadPlaylistTracks(playlistSelect.value);
+    });
+
+    btnPrev.addEventListener('click', prevTrack);
+    btnNext.addEventListener('click', nextTrack);
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const token = await getAccessToken();
+      if (!token) return;
+      await fetchPlaylists(token);
+    });
+  </script>
+</body>
+
+</html>
